@@ -1,0 +1,30 @@
+---
+- name: Optimize APC for production
+  sudo: yes
+  ini_file: option={{item.option}} value={{item.value}} section=APC dest={{ liara_php_conf_dir }}/apc.ini
+  with_items:
+    # Optimize APC shared memory size from 32M to 64M.
+    - { option: apc.shm_size, value: 64 }
+    # This is the default number of segments, benchmark and optimize if needed.
+    - { option: apc.shm_segments, value: 1 }
+    # Lazy loading is sorta superceded by PSR-X autoloading, not sure what will be the impact of
+    # the increased algorithm complexity at the APC level.
+    - { option: apc.include_once_override, value: yes }
+    - { option: apc.lazy_functions, value: 1 }
+    - { option: apc.lazy_classes, value: 1 }
+    - { option: apc.file_md5, value: no }
+    # Logs any scripts that were automatically excluded from being cached due to early/late binding issues.
+    - { option: apc.report_autofilter, value: no }
+    # Should always be enabled on development servers.
+    # Disable on production only if you know what are the implications and have the
+    # infrastructure setup to automatically clear APC on deployments.
+    - { option: apc.stat, value: 0 }
+    - { option: apc.enable_cli, value: 1 }
+    # By default slam defense is "on".
+    - { option: apc.slam_defense, value: 1 }
+    # Pay attention to the TTL, specially now that we are not using "stat", and therefore
+    # do not automatically update the cache when files change.
+    # Set the TTL to a day, do an apache graceful restart to flush the APC cache in the meantime.
+    - apc.user_ttl=7200
+    - apc.gc_ttl=3600
+

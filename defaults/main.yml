@@ -1,0 +1,3 @@
+---
+# Used to determine what performance settings to load, example: [local|dev|qa|prod]
+liara_performance_environment: "local"

@@ -1,0 +1,23 @@
+---
+- name: Install APC
+  sudo: yes
+  shell: yes '' | pecl install -f apc creates={{ liara_php_mod_dir }}/apc.so
+
+- name: Enable APC
+  sudo: yes
+  ini_file: option=extension value=apc.so section=APC dest={{ liara_php_conf_dir }}/apc.ini
+  notify: Restart Apache
+
+- name: Optimize APC for local development
+  include: local.yml
+  when: liara_performance_environment == "local"
+
+- name: Optimize APC for performance
+  include: prod.yml
+  when: liara_performance_environment == "prod"
+
+# @TODO finish setting up APC monitoring, headless install above is not creating apc.php.
+#- name: Setup APC stats monitoring
+#  sudo: yes
+#  command: cp /usr/share/php/apc.php {{ apc_stats_webdir }}/apc.php
+

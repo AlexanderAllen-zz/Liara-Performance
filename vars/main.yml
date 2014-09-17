@@ -1,0 +1,3 @@
+---
+# Where to drop the stats page included with the APC extension.
+liara_performance_apc_stats: /var/www/apc.php
