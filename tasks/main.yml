@@ -1,4 +1,11 @@
 ---
+- name: Install Ubuntu dependencies
+  sudo: yes
+  yum: name={{ item }} state=installed
+  when: ansible_os_family == 'Ubuntu'
+  with_items:
+    - libpcre3-dev
+
 - name: Install APC
   sudo: yes
   shell: yes '' | pecl install -f apc creates={{ liara_php_mod_dir }}/apc.so
